@@ -1,0 +1,94 @@
+{#
+Copyright 2019 Nokia
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: chart-repo
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{ caas.kubernetes_component_label }}: chart-repo
+  template:
+    metadata:
+      annotations:
+        danm.k8s.io/interfaces: |
+          [
+            {
+              "network":"flannel"
+            }
+          ]
+      labels:
+        {{ caas.kubernetes_component_label }}: chart-repo
+    spec:
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        nodename: caas_master1
+      securityContext:
+        runAsUser: {{ caas.uid.chartrepo }}
+      containers:
+        - name: chart-repo-handler
+          image: {{ container_image_names | select('search', '/chartrepo') | list | last }}
+          imagePullPolicy: IfNotPresent
+          ## Limits equals requets to put the container into qualified QoS category
+          resources:
+            limits:
+              cpu: "0.2"
+              memory: "128Mi"
+            requests:
+              cpu: "0.2"
+              memory: "128Mi"
+          command:
+            - "/usr/bin/mainstart.sh"
+          env:
+            - name: CHARTREPOHANDLER_AUTHURL
+              value: {{ caas.swift }}/auth/v1.0
+            - name: CHARTREPOHANDLER_AUTHUSER
+              value: admin:admin
+            - name: CHARTREPOHANDLER_LISTENONPORT
+              value: "{{ caas.chart_repo_port }}"
+            - name: CHARTREPOHANDLER_LISTENONINTERFACE
+              value: "{{ caas.internal_flannel_interface }}"
+            - name: CHARTREPOHANDLER_AUTHKEY
+              value: "{{ swift_pass.stdout }}"
+            - name: CHARTREPOHANDLER_CONTAINER
+              value: packages
+            - name: CHARTREPOHANDLER_REPOURL
+              value: https://{{ caas.chart_repo_url }}
+            - name: CHARTREPOHANDLER_INDEXPATH
+              value: charts
+            - name: CHARTREPOHANDLER_TLSCERTPATH
+              value: /etc/chart-repo/ssl/chart-repo{{ nodeindex }}.pem
+            - name: CHARTREPOHANDLER_TLSKEYPATH
+              value: /etc/chart-repo/ssl/chart-repo{{ nodeindex }}-key.pem
+            - name: CHARTREPOHANDLER_TLSCAPATH
+              value: /etc/chart-repo/ssl/ca.pem
+          volumeMounts:
+            - name: time-mount
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: chart-repo-cert
+              mountPath: /etc/chart-repo/ssl
+              readOnly: true
+      volumes:
+        - name: time-mount
+          hostPath:
+            path: /etc/localtime
+        - name: chart-repo-cert
+          hostPath:
+            path: /etc/chart-repo/ssl

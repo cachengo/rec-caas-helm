@@ -1,0 +1,69 @@
+---
+# Copyright 2019 Nokia
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: create the necessary directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ caas.helm_home }}/repository"
+    - "{{ caas.helm_home }}/repository/local"
+
+- name: allowing cloud_admin_user to access helm_home folder recursively
+  acl:
+    path:  "{{ caas.helm_home }}"
+    entity: "{{ users.admin_user_name }}"
+    etype: user
+    permissions: rwx
+    state: present
+    recursive: yes
+    default: yes
+  become_user: "root"
+
+- name: applies the effective rights mask to the helm_home folder recursively
+  acl:
+    path:  "{{ caas.helm_home }}"
+    etype: mask
+    permissions: rwx
+    state: present
+    recursive: yes
+    default: yes
+  become_user: "root"
+
+- name: touch the repository file
+  copy:
+    content: ""
+    owner: "{{ users.admin_user_name }}"
+    group: "{{ users.admin_user_name }}"
+    dest: "{{ caas.helm_home }}/repository/repositories.yaml"
+
+- name: create the local repository file
+  copy:
+    content: |
+      apiVersion: v1
+      entries: {}
+    owner: "{{ users.admin_user_name }}"
+    group: "{{ users.admin_user_name }}"
+    dest: "{{ caas.helm_home }}/repository/local/index.yaml"
+
+- name: init helm
+  shell: "HELM_HOME={{ caas.helm_home }} helm init -c --skip-refresh"
+
+- name: add the chart-repo to helm repositories
+  shell: "HELM_HOME={{ caas.helm_home }} /usr/bin/helm repo add default {{ caas.chart_repo }}/charts"
+  register: res
+  until: res.stdout | search('has been added to your repositories')
+  retries: 3
+  delay: 5

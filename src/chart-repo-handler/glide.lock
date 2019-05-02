@@ -1,0 +1,78 @@
+---
+# Copyright 2019 Nokia
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+hash: b560dfd277fb6f11ca0591ea08ca8b9f07ce90b21428e547c62d90238a03d1ea
+updated: 2017-03-14T09:50:45.567193043+08:00
+imports:
+- name: github.com/blang/semver
+  version: 31b736133b98f26d5e078ec9eb591666edfd091f
+- name: github.com/ghodss/yaml
+  version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
+- name: github.com/gobwas/glob
+  version: bea32b9cd2d6f55753d94a28e959b13f0244797a
+  subpackages:
+  - compiler
+  - match
+  - syntax
+  - syntax/ast
+  - syntax/lexer
+  - util/runes
+  - util/strings
+- name: github.com/golang/glog
+  version: 44145f04b68cf362d9c4df2182967c2275eaefed
+- name: github.com/golang/protobuf
+  version: df1d3ca07d2d07bba352d5b73c4313b4e2a6203e
+  subpackages:
+  - proto
+  - ptypes/any
+  - ptypes/timestamp
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/mux
+  version: 392c28fe23e1c45ddba891b0320b3b5df220beea
+- name: github.com/kelseyhightower/envconfig
+  version: 8bf4bbfc795e2c7c8a5ea47b707453ed019e2ad4
+- name: github.com/Masterminds/semver
+  version: 59c29afe1a994eacb71c833025ca7acf874bb1da
+- name: github.com/ncw/swift
+  version: 6c1b1510538e1f00d49a558b7b9b87d71bc454d6
+- name: golang.org/x/crypto
+  version: 1f22c0103821b9390939b6776727195525381532
+  subpackages:
+  - cast5
+  - openpgp
+  - openpgp/armor
+  - openpgp/clearsign
+  - openpgp/elgamal
+  - openpgp/errors
+  - openpgp/packet
+  - openpgp/s2k
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+- name: k8s.io/helm
+  version: 1b330722aafcb8123114ae51f69d1e884a326f3e
+  subpackages:
+  - pkg/chartutil
+  - pkg/ignore
+  - pkg/proto/hapi/chart
+  - pkg/proto/hapi/version
+  - pkg/provenance
+  - pkg/repo
+  - pkg/tlsutil
+  - pkg/urlutil
+- name: k8s.io/kubernetes
+  version: e9eeec655e7fdee50d4e19200f9707d1cd4a3371
+  subpackages:
+  - pkg/version
+testImports: []

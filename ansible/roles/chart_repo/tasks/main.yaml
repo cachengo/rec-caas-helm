@@ -1,0 +1,56 @@
+---
+# Copyright 2019 Nokia
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: The swift user is
+  shell: grep "export SWIFT_USER=" /etc/swift/usr/admin/env_file | awk -F"=" '{print($2) }'
+  register: swift_user
+
+- name: The swift tenant is
+  shell: grep "export SWIFT_TENANT=" /etc/swift/usr/admin/env_file | awk -F"=" '{print($2) }'
+  register: swift_tenant
+
+- name: The swift pass is
+  shell: grep "export SWIFT_PASS=" /etc/swift/usr/admin/env_file | awk -F"=" '{print($2) }'
+  register: swift_pass
+
+- name: Chart repo handler template
+  template:
+    src: "chart-repo.yml"
+    dest: "{{ caas.manifests_directory }}/chart-repo.yml"
+
+- name: Chart repo service template
+  template:
+    src: "chart-repo_service.yml"
+    dest: "{{ caas.manifests_directory }}/chart-repo_service.yml"
+
+- name: Authenticate into swift
+  shell: 'curl -XGET -i -H"X-Auth-User:{{ swift_tenant.stdout }}:{{ swift_user.stdout }}" -H"X-Auth-Key:{{ swift_pass.stdout }}" {{ caas.swift }}/auth/v1.0 | grep X-Auth-Token: | awk "{ print \$2 }"'
+  register: SWIFT_AUTH_KEY
+
+- name: Create packages folder/container into swift
+  shell: 'curl -XPUT -H"X-Auth-Token: {{ SWIFT_AUTH_KEY.stdout }}" {{ caas.swift }}/v1.0/AUTH_admin/packages'
+
+- name: Read the swift main folder/container and check if is there the packages folder/conatiner
+  shell: 'curl -XGET -H"X-Auth-Token: {{ SWIFT_AUTH_KEY.stdout }}" {{ caas.swift }}/v1.0/AUTH_admin | grep packages'
+
+- name: start chart repo handler
+  kubectl:
+    manifest: "{{ caas.manifests_directory }}/chart-repo.yml"
+    state: present
+
+- name: start chart repo service
+  kubectl:
+    manifest: "{{ caas.manifests_directory }}/chart-repo_service.yml"
+    state: present
