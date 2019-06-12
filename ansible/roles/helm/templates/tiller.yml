@@ -49,4 +49,12 @@ spec:
               value: "{{ caas.internal_flannel_interface }}"
             - name: TILLER_PORT
               value: "{{ caas.tiller_port }}"
+          volumeMounts:
+            - name: time-mount
+              mountPath: /etc/localtime
+              readOnly: true
+      volumes:
+        - name: time-mount
+          hostPath:
+            path: /etc/localtime
       serviceAccountName: tiller
