@@ -33,8 +33,8 @@ BuildArch:      x86_64
 Vendor:         %{_platform_vendor} and helm/helm unmodified
 Source0:        %{name}-%{version}.tar.gz
 
-Requires: docker-ce >= 18.09.2
-BuildRequires: docker-ce-cli >= 18.09.2
+Requires: docker-ce >= 18.09.2, rsync
+BuildRequires: docker-ce-cli >= 18.09.2, rsync, xz
 
 %description
 This rpm contains the %{COMPONENT} container for CaaS subsystem.
@@ -83,7 +83,7 @@ docker build \
   --tag tiller:%{IMAGE_TAG} \
   %{docker_build_dir}/tiller
 mkdir -p %{docker_save_dir}/
-docker save tiller:%{IMAGE_TAG} | gzip -c > "%{docker_save_dir}/tiller:%{IMAGE_TAG}.tar"
+docker save tiller:%{IMAGE_TAG} | xz -z -T2 > "%{docker_save_dir}/tiller:%{IMAGE_TAG}.tar"
 docker rmi tiller:%{IMAGE_TAG}
 
 %install
