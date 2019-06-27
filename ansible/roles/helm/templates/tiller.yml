@@ -36,6 +36,7 @@ spec:
       labels:
         {{ caas.kubernetes_component_label }}: tiller
     spec:
+      priorityClassName: "system-cluster-critical"
       dnsPolicy: ClusterFirst
       nodeSelector:
         nodename: caas_master1
@@ -49,6 +50,9 @@ spec:
               value: "{{ caas.internal_flannel_interface }}"
             - name: TILLER_PORT
               value: "{{ caas.tiller_port }}"
+          resources:
+            requests:
+              cpu: "10m"
           volumeMounts:
             - name: time-mount
               mountPath: /etc/localtime

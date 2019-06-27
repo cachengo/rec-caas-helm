@@ -36,6 +36,7 @@ spec:
       labels:
         {{ caas.kubernetes_component_label }}: chart-repo
     spec:
+      priorityClassName: "system-cluster-critical"
       dnsPolicy: ClusterFirst
       nodeSelector:
         nodename: caas_master1
@@ -45,13 +46,9 @@ spec:
         - name: chart-repo-handler
           image: {{ container_image_names | select('search', '/chartrepo') | list | last }}
           imagePullPolicy: IfNotPresent
-          ## Limits equals requets to put the container into qualified QoS category
           resources:
-            limits:
-              cpu: "0.2"
-              memory: "128Mi"
             requests:
-              cpu: "0.2"
+              cpu: "10m"
               memory: "128Mi"
           command:
             - "/usr/bin/mainstart.sh"
