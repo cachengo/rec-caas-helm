@@ -62,7 +62,7 @@ spec:
             - name: CHARTREPOHANDLER_LISTENONINTERFACE
               value: "{{ caas.internal_flannel_interface }}"
             - name: CHARTREPOHANDLER_AUTHKEY
-              value: "{{ swift_pass.stdout }}"
+              value: "{{ caas.swift_credential.password }}"
             - name: CHARTREPOHANDLER_CONTAINER
               value: packages
             - name: CHARTREPOHANDLER_REPOURL
