@@ -26,13 +26,6 @@ spec:
       {{ caas.kubernetes_component_label }}: chart-repo
   template:
     metadata:
-      annotations:
-        danm.k8s.io/interfaces: |
-          [
-            {
-              "network":"flannel"
-            }
-          ]
       labels:
         {{ caas.kubernetes_component_label }}: chart-repo
     spec:
