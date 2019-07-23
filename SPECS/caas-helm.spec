@@ -14,8 +14,8 @@
 
 %define COMPONENT helm
 %define RPM_NAME caas-%{COMPONENT}
-%define RPM_MAJOR_VERSION 2.14.1
-%define RPM_MINOR_VERSION 1
+%define RPM_MAJOR_VERSION 2.14.2
+%define RPM_MINOR_VERSION 0
 %define IMAGE_TAG %{RPM_MAJOR_VERSION}-%{RPM_MINOR_VERSION}
 %define go_version 1.11.5
 %define cni_plugins_version 0.7.0
