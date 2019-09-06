@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM centos:7.6.1810
+FROM centos:7
 MAINTAINER Krisztian Lengyel <krisztian.lengyel@nokia.com>
 
 ARG HELM_VERSION
@@ -28,7 +28,8 @@ ENV PATH="$GOPATH/bin:$go_install_dir/bin:$PATH"
 RUN yum install -y --setopt=skip_missing_names_on_install=False \
       ${build_packages} \
 &&  mkdir -p $go_install_dir \
-&&  curl -fsSL -k https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz | tar zx --strip-components=1 -C ${go_install_dir} \
+&& if test "$(uname -m)" = "aarch64" ; then ARCH="arm64"; else ARCH="amd64"; fi \
+&&  curl -fsSL -k https://dl.google.com/go/go${go_version}.linux-${ARCH}.tar.gz | tar zx --strip-components=1 -C ${go_install_dir} \
 \
 # Build Helm
 &&  mkdir -p $GOPATH/src/k8s.io \

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+%define CPU_ARCHITECTURE aarch64
 %define COMPONENT helm
 %define RPM_NAME caas-%{COMPONENT}
 %define RPM_MAJOR_VERSION 2.14.3
@@ -29,7 +30,7 @@ Version:        %{RPM_MAJOR_VERSION}
 Release:        %{RPM_MINOR_VERSION}%{?dist}
 Summary:        Containers as a Service %{COMPONENT} component
 License:        %{_platform_licence} and MIT license and BSD and Apache License and Lesser General Public License
-BuildArch:      x86_64
+BuildArch:      %{CPU_ARCHITECTURE}
 Vendor:         %{_platform_vendor} and helm/helm unmodified
 Source0:        %{name}-%{version}.tar.gz
 
